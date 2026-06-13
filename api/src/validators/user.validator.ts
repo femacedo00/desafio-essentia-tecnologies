@@ -9,8 +9,8 @@ const name = z
 const email = z
     .string({ message: "E-mail é obrigatório" })
     .email({ message: "Formato de e-mail inválido" })
-    .trim()
-    .toLowerCase();
+    .max(128, "O e-mail não pode passar de 128 caracteres")
+    .trim();
 
 const password = z
     .string({ message: "Senha é obrigatória" })
