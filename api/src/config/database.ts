@@ -21,8 +21,13 @@ const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
 
 export const connectMySQL = async (): Promise<void> => {
     try {
+        // Realiza a conexão com o MySQL
         await sequelize.authenticate();
         console.log('MySQL conectado com sucesso!');
+
+        // Sincorniza as tabelas do MySQL e atualiza a estrutura do banco se o model for alterado
+        await sequelize.sync({ alter: true });
+        console.log('Tabelas do MySQL sincronizadas com sucesso!');
     } catch (error) {
         console.error('Erro ao conectar ao MySQL:', error);
         process.exit(1); // Fecha a aplicação caso o banco principal falhe
