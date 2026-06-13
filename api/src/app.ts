@@ -6,13 +6,17 @@ import { errorHandler } from "./middlewares/error.middleware.js";
 const app = express();
 
 /* MIDDLEWARES GLOBAIS */
+
+// Intercepta as requisições recebidas e verifica se o corpo (Body) está no formato JSON
 app.use(bodyParser.json());
 
+// Lida com requisições enviadas no formato application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Chama todas as rotas 
 app.use(routes);
 
+// Lida com o tratamento de erros na response
 app.use(errorHandler);
 
 // Exportamos o app pronto e configurado
