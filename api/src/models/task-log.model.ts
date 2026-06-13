@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database.js';
-import { TaskLogAttributes } from '../types/task.types.js';
+import { TaskLogAttributes } from '../types/task-log.types.js';
 
 export class TaskLogModel extends Model<TaskLogAttributes, Omit<TaskLogAttributes, 'id'>> implements TaskLogAttributes {
     public id!: number;

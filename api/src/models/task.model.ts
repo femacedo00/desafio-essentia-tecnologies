@@ -1,8 +1,9 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database.js';
 import UserModel from './user.model.js';
-import { TaskAttributes, TaskCreationAttributes, TaskHookOptions } from '../types/task.types.js';
+import { TaskAttributes, TaskCreationAttributes } from '../types/task.types.js';
 import { TaskLogModel } from './task-log.model.js';
+import { TaskHookOptions } from '../types/task-log.types.js';
 
 export class TaskModel extends Model<TaskAttributes, TaskCreationAttributes> implements TaskAttributes {
     public id!: number;
