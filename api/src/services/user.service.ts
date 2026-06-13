@@ -1,14 +1,8 @@
 import User from "../models/user.model.js";
-
-// Definção de dados necessário para a criação de um usuário
-interface CreateUserDTO {
-    name: string;
-    email: string;
-    password: string;
-}
+import { CreateUserDTO, ResponseUserDTO } from "../dtos/user.dtos.js";
 
 export class UserService {
-    public async create(userData: CreateUserDTO) {
+    public async create(userData: CreateUserDTO): Promise<ResponseUserDTO> {
         const { email } = userData;
 
         // Impedir e-mails duplicados
