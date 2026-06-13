@@ -117,6 +117,6 @@ TaskModel.belongsTo(UserModel, {
         allowNull: false,
     },
     as: 'user',
-    onUpdate: 'CASCADE', // ✅
-    onDelete: 'CASCADE', // ✅
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
 });

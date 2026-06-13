@@ -1,18 +1,38 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database.js';
 import bcrypt from 'bcrypt';
+import { UserAttributes, UserCreationAttributes } from '../types/user.types.js';
 
-export class User extends Model {
+export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     declare id: number;
     declare name: string;
     declare email: string;
     declare password: string;
+
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
+    declare readonly deletedAt: Date | null;
 
     // Método auxiliar para comparar a senha digitada no login com o hash do banco
     public async checkPassword(password: string): Promise<boolean> {
         return bcrypt.compare(password, this.password);
+    }
+
+    // Sobrescrever o toJSON nativo
+    public toJSON(): any {
+        // Pega os valores puros do banco
+        const values: Record<string, any> = { ...this.get() };
+
+        // Remove o que não deve ir para o cliente
+        delete values.id;
+        delete values.password;
+
+        // Converte os objetos Date para String ISO de forma limpa
+        if (values.createdAt) values.createdAt = values.createdAt.toISOString();
+        if (values.updatedAt) values.updatedAt = values.updatedAt.toISOString();
+        if (values.deletedAt) values.deletedAt = values.deletedAt.toISOString();
+
+        return values;
     }
 }
 
@@ -43,6 +63,8 @@ User.init(
     {
         sequelize,
         tableName: 'users',
+        timestamps: true,
+        paranoid: true,
         hooks: {
             // Criptografa a senha automaticamente antes de salvar no MySQL
             beforeSave: async (user: User) => {

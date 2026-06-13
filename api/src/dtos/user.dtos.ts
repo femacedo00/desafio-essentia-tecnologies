@@ -11,6 +11,7 @@ export interface ResponseUserDTO {
     email: string;
     updatedAt: string;
     createdAt: string;
+    deletedAt?: string;
 }
 
 // Definção de dados necessário para o login de um usuário

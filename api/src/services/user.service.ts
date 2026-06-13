@@ -16,11 +16,7 @@ export class UserService {
         const newUser = await User.create(userData as any);
 
         // Retorna o usuário no formato JSON sem o id e a senha
-        const userResponse = newUser.toJSON();
-        delete userResponse.password;
-        delete userResponse.id;
-
-        return userResponse;
+        return newUser.toJSON();
     }
 
     public async login(credentials: LoginUserDTO): Promise<ResponseLoginUserDTO> {
@@ -47,10 +43,8 @@ export class UserService {
             { expiresIn: (process.env.JWT_EXPIRES_IN || "1d") as any }
         );
 
-        // Retorna o usuário no formato JSON sem o id e a senha
+        // Retorna o usuário no formato JSON
         const userResponse = user.toJSON();
-        delete userResponse.password;
-        delete userResponse.id;
 
         return {
             user: userResponse,
