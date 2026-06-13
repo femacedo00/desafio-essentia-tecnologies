@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { UserService } from "../services/user.service.js";
 import httpStatus from 'http-status';
-import { RegisterSchema } from '../validators/user.validator.js';
+import { LoginSchema, RegisterSchema } from '../validators/user.validator.js';
+import { ZodError } from 'zod';
 
 const userService = new UserService();
 
@@ -12,7 +13,7 @@ export class UserController {
             const validateData = RegisterSchema.parse(req.body);
 
             // Service da criação do usuário
-            const user = await userService.login(validateData);
+            const user = await userService.create(validateData);
 
             // Resposta de sucesso no cadastrado do usuário no banco
             res.status(httpStatus.CREATED).json({
@@ -20,7 +21,17 @@ export class UserController {
                 data: user
             });
         } catch (error: any) {
-            // Resposta de erro caso algum processo falhe
+            // Se o erro veio do validator, formata amigavelmente para o cliente
+            if (error instanceof ZodError) {
+                res.status(httpStatus.BAD_REQUEST).json({
+                    status: "error",
+                    message: "Erro de validação de dados",
+                    errors: error.issues
+                });
+                return;
+            }
+
+            // Resposta de erro caso algum processo falhe no service
             res.status(httpStatus.BAD_REQUEST).json({
                 status: "error",
                 message: error.message || "Interna server error"
@@ -30,19 +41,11 @@ export class UserController {
 
     public async login(req: Request, res: Response): Promise<void> {
         try {
-            const { email, password } = req.body;
-
             // Validação de entrada
-            if (!email || !password) {
-                // Resposta de erro caso haja campo(s) obrigatório(s) ausentes 
-                res.status(httpStatus.BAD_REQUEST).json({
-                    message: "Campos obrigatórios ausentes"
-                })
-                return;
-            }
+            const validateData = LoginSchema.parse(req.body);
 
             // Service da criação do usuário
-            const result = await userService.login({ email, password });
+            const result = await userService.login(validateData);
 
             // Resposta de sucesso no login
             res.status(httpStatus.OK).json({
@@ -51,7 +54,17 @@ export class UserController {
             });
 
         } catch (error: any) {
-            // Resposta de erro caso algum processo falhe
+            // Se o erro veio do validator, formata amigavelmente para o cliente
+            if (error instanceof ZodError) {
+                res.status(httpStatus.BAD_REQUEST).json({
+                    status: "error",
+                    message: "Erro de validação de dados",
+                    errors: error.issues
+                });
+                return;
+            }
+
+            // Resposta de erro caso algum processo falhe no service
             res.status(httpStatus.BAD_REQUEST).json({
                 status: "error",
                 message: error.message || "Interna server error"
