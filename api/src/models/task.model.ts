@@ -38,7 +38,7 @@ TaskModel.init(
             defaultValue: false,
         },
         userId: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
             references: {
                 model: 'users',
