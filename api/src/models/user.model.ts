@@ -3,12 +3,12 @@ import sequelize from '../config/database.js';
 import bcrypt from 'bcrypt';
 
 export class User extends Model {
-    public id!: number;
-    public name!: string;
-    public email!: string;
-    public password!: string;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+    declare id: number;
+    declare name: string;
+    declare email: string;
+    declare password: string;
+    declare readonly createdAt: Date;
+    declare readonly updatedAt: Date;
 
     // Método auxiliar para comparar a senha digitada no login com o hash do banco
     public async checkPassword(password: string): Promise<boolean> {
