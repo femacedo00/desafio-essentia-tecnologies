@@ -39,7 +39,7 @@ export class UserService {
         }
 
         // Gerar o JWT 
-        const secret = process.env.JWR_SECRET || "default_secret";
+        const secret = process.env.JWT_SECRET || "default_secret";
 
         const token = jwt.sign(
             { id: user.id },
