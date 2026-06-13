@@ -1,25 +1,18 @@
 import { Request, Response } from 'express';
 import { UserService } from "../services/user.service.js";
 import httpStatus from 'http-status';
+import { RegisterSchema } from '../validators/user.validator.js';
 
 const userService = new UserService();
 
 export class UserController {
     public async register(req: Request, res: Response): Promise<void> {
         try {
-            const { name, email, password } = req.body;
-
             // Validação de entrada
-            if (!name || !email || !password) {
-                // Resposta de erro caso haja campo(s) obrigatório(s) ausentes 
-                res.status(httpStatus.BAD_REQUEST).json({
-                    message: "Campos obrigatórios ausentes"
-                })
-                return;
-            }
+            const validateData = RegisterSchema.parse(req.body);
 
             // Service da criação do usuário
-            const user = await userService.create({ name, email, password });
+            const user = await userService.login(validateData);
 
             // Resposta de sucesso no cadastrado do usuário no banco
             res.status(httpStatus.CREATED).json({
