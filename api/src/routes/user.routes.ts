@@ -7,4 +7,7 @@ const userController = new UserController();
 // POST /users/register - Rota de cadastro de usuário
 userRoutes.post('/register', userController.register);
 
+// POST /users/login - Rota de login de usuário
+userRoutes.post('/login', userController.login);
+
 export default userRoutes;
