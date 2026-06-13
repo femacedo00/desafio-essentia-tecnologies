@@ -9,6 +9,7 @@ export interface TaskAttributes {
     userId: number;
     createdAt?: Date;
     updatedAt?: Date;
+    deletedAt?: Date | null;
 }
 
 // Definição dos atributos opcionais na criação (id é gerado automaticamente)
@@ -22,4 +23,8 @@ export interface TaskLogAttributes {
     action: 'CREATE' | 'UPDATE' | 'DELETE';
     changes?: string; // Guardaremos como uma string JSON das alterações
     createdAt?: Date;
+}
+
+export interface TaskHookOptions {
+    userId?: number;
 }
