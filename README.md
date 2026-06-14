@@ -1,4 +1,4 @@
-# TechX - To-Do List Manager
+# TechX - Gerenciamento de tarefas
 
 Este é o repositório do desafio técnico para a Essentia Group. O projeto consiste em um gerenciador de tarefas diárias para a empresa fictícia TechX, estruturado em um formato de Monorepo, separando de forma isolada o Backend (`api`) e o Frontend (`webapp`).
 
@@ -13,7 +13,9 @@ Este é o repositório do desafio técnico para a Essentia Group. O projeto cons
 
 Antes de iniciar, certifique-se de ter instalado em sua máquina:
 - [Node.js](https://nodejs.org/) (Versão LTS recomendada)
+- [npm](https://nodejs.org/) (Instalado com o Node)
 - [Docker](https://www.docker.com/products/docker-desktop/) e Docker Compose ativos
+- [Angular CLI](https://angular.dev/tools/cli) Instalação global opcional, o projeto roda via `npx`
 
 ---
 
@@ -261,3 +263,46 @@ Responsável pelo gerenciamento de acesso dos usuários no sistema.
   }
 }
 ```
+
+## Inicialização do Front-end (WebApp)
+A apicação foi desenvolvida em **Angular (v18+)**, gerenciamento de estado reativo com **RxJS** e estilos customizados com **Sass (SCSS)**.
+
+### Passo a Passo para Setup
+
+1. **Navegue até a pasta do front-end** (caso esteja na raiz do repositório):
+  ```bash
+  cd webapp
+  ```
+
+2. **Instale as dependências do projeto:**
+  ```bash
+  npm install
+  ```
+
+3. **Inicie o servidor de desenvolvimento:**
+  ```bash
+  npm start
+  ```
+
+4. **Acesse a aplicação:**
+  Abra o seu navegador e acesse `http://localhost:4200`
+
+**Atenção:** Para o ecossistema funcionar por completo, a API Back-end (Express na porta 3000) e os bancos de dados (MySQL e MongoDB) precisam estar ativos antes de realizar as operações do sistema do front-end.
+
+### Mapeamento de Páginas e Segurança (Rotas)
+A aplicação utiliza o roteamento para garantir que rotas sensíveis não sejam expostas a usuários anônimos.
+
+| Página | Rota (`URL`) | Descrição | Requer Autenticação? |
+| :--- | :--- | :--- | :--- |
+| `Login` | `/login` | Tela de autenticação inicial. Captura as credenciais e persiste o token JWT. | Não |
+| `Cadastro` | `/register` | Formulário de criação de novas contas. | Não |
+| `Dashboard de Tasks` | `/tasks` | Um painel interativo em formato contendo o formulário de criação e edição, e a listagem das tarefas do usuário. | Sim |
+
+### Funcionalidades da Tela de Task
+
+1. **Criação:** Formulário na barra lateral esquerda para o cadastro de uma nova tarefa.
+2. **Listagem:** Lista com todos as tarefas cadastradas pelo usuário.
+3. **Alteração de estado da tarefa:** Checkbox localizado no card de cada tarefa que indica se a tarefa está concluída ou não.
+4. **Edição:** O botão "Editar" no card de cada tarefa carrega os dados do card selecionado de volta para o formulário lateral, alternando a interface para o modo de edição.
+5. **Exclusão:** O botão "Excluir" no card de cada tarefa remove a tarefa da listagem permanentemente.
+6. **Histórico de alterações da tarefa:** O botão "Histórico" no card de cada tarefa abre um modal e carrega uma linha do tempo detalhando as alterações daquela tarefa específica.
