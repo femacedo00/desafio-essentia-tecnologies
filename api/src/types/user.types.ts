@@ -1,5 +1,6 @@
 import { Optional } from "sequelize";
 
+// Estrutura para o banco MySQL
 export interface UserAttributes {
     id: number;
     name: string;
