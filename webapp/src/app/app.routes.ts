@@ -5,7 +5,7 @@ import { Tasks } from './pages/tasks/tasks';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-    // Redireciona a rota raiz vazia direto para o login
+    // Redireciona a rota raiz vazia direto para a de task
     { path: '', redirectTo: 'tasks', pathMatch: 'full' },
 
     // Rotas de Autenticação
