@@ -25,8 +25,14 @@ export const connectMySQL = async (): Promise<void> => {
         await sequelize.authenticate();
         console.log('MySQL conectado com sucesso!');
 
-        // Sincorniza as tabelas do MySQL e atualiza a estrutura do banco se o model for alterado
-        await sequelize.sync({ alter: true });
+        // Sincorniza as tabelas do MySQ
+        if (process.env.NODE_ENV === 'production') {
+            // Em produção, ele apenas conecta
+            await sequelize.sync();
+        } else {
+            // Em desenvolvimento, ele pode sincronizar alterações
+            await sequelize.sync({ alter: true });
+        }
         console.log('Tabelas do MySQL sincronizadas com sucesso!');
     } catch (error) {
         console.error('Erro ao conectar ao MySQL:', error);
