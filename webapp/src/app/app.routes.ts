@@ -6,7 +6,7 @@ import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     // Redireciona a rota raiz vazia direto para o login
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: '', redirectTo: 'tasks', pathMatch: 'full' },
 
     // Rotas de Autenticação
     { path: 'login', component: Login },
@@ -16,5 +16,5 @@ export const routes: Routes = [
     { path: 'tasks', component: Tasks, canActivate: [authGuard] },
 
     // Rota para páginas não encontradas (404)
-    { path: '**', redirectTo: 'login' }
+    { path: '**', redirectTo: 'tasks' }
 ];
