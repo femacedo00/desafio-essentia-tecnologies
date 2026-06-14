@@ -35,8 +35,9 @@ export class Login {
         this.router.navigate(['/tasks']);
       },
       error: (err) => {
+        console.log(err);
         // Dispara o pop-up
-        const msg = err.error?.message || 'Erro ao registrar usuário.';
+        const msg = err.error?.message || 'Erro ao realizar login. Tente novamente.';
         this.toast.show(msg, 'error');
       }
     });
