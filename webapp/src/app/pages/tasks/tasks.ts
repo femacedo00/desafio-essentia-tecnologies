@@ -75,7 +75,10 @@ export class Tasks implements OnInit {
         next: () => {
           // Em caso de sucesso, limpa os campos e dispara um pop-up de sucesso
           this.toast.show('Tarefa criada com sucesso!', 'success');
-          this.taskForm.reset();
+          this.taskForm.reset({
+            title: '',
+            description: ''
+          });
         },
         error: (err) => {
           // Em caso de erro, mantém os campos e dispara um pop-up de erro
@@ -98,7 +101,10 @@ export class Tasks implements OnInit {
   // cancela a edição caso o usuário desista
   public onCancelEdit(): void {
     this.editingTaskId = null;
-    this.taskForm.reset();
+    this.taskForm.reset({
+      title: '',
+      description: ''
+    });
   }
 
   // Altera o estado de conclusão da tarefa (concluída ou pendente), invertendo o valor booleano atual
