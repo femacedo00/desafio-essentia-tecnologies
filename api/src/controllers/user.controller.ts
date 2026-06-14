@@ -6,6 +6,7 @@ import { LoginSchema, RegisterSchema } from '../validators/user.validator.js';
 const userService = new UserService();
 
 export class UserController {
+    // Craiação de um usuário
     public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             // Validação de entrada
@@ -24,6 +25,7 @@ export class UserController {
         }
     }
 
+    // Autenticação de um usuário
     public async login(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             // Validação de entrada

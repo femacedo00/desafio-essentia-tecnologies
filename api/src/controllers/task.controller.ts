@@ -85,6 +85,7 @@ export class TaskController {
         }
     }
 
+    // Histórico de uma determinada tarefa
     public async getLog(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.userId!;
