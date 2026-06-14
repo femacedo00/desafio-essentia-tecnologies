@@ -12,6 +12,6 @@ import { ToastService } from './core/services/toast';
 })
 
 export class App {
-  protected readonly title = signal('TechX - To-Do List Manager');
+  protected readonly title = signal('Gestão de Tarefas');
   public toastService = inject(ToastService);
 }
