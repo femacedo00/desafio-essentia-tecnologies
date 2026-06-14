@@ -6,11 +6,12 @@ import { TaskService } from '../../core/services/task';
 import { Auth } from '../../core/services/auth';
 import { ToastService } from '../../core/services/toast';
 import { Task, CreateTaskDto, UpdateTaskDto } from '../../core/models/task.model';
+import { TaskLogsModal } from './components/task-logs-modal/task-logs-modal';
 
 @Component({
   selector: 'app-tasks',
   standalone: true,
-  imports: [ReactiveFormsModule, AsyncPipe, NgClass],
+  imports: [ReactiveFormsModule, AsyncPipe, NgClass, TaskLogsModal],
   templateUrl: './tasks.html',
   styleUrl: './tasks.scss'
 })
@@ -22,6 +23,7 @@ export class Tasks implements OnInit {
   private toast = inject(ToastService);
   public taskService = inject(TaskService);
   public editingTaskId: number | null = null;
+  public selectedTaskForLogs: Task | null = null;
 
   // Captura e validação novas tarefas
   public taskForm: FormGroup = this.fb.group({
@@ -135,5 +137,15 @@ export class Tasks implements OnInit {
     this.authService.logout();
     this.toast.show('Sessão encerrada com sucesso.', 'success');
     this.router.navigate(['/login']);
+  }
+
+  // Abre o modal de histórico da tarefa selecionada
+  public onOpenLogs(task: Task): void {
+    this.selectedTaskForLogs = task;
+  }
+
+  // Fecha e limpa o modal da tarefa selecionada
+  public onCloseLogs(): void {
+    this.selectedTaskForLogs = null;
   }
 }

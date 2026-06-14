@@ -41,7 +41,6 @@
 
             <div class="tasks-list">
                 @for (task of (taskService.tasks$ | async); track task.id) {
-
                 <div class="task-card" [ngClass]="{ 'is-completed': task.completed }">
                     <div class="task-info">
                         <div class="task-header-row">
@@ -55,6 +54,9 @@
                     </div>
 
                     <div class="task-actions">
+                        <button class="btn-logs" (click)="onOpenLogs(task)" title="Ver histórico de alterações">
+                            Histórico
+                        </button>
                         <button class="btn-edit" (click)="onStartEdit(task)" title="Editar tarefa">
                             Editar
                         </button>
@@ -63,6 +65,12 @@
                         </button>
                     </div>
                 </div>
+
+                @if (selectedTaskForLogs) {
+                <app-task-logs-modal [taskId]="selectedTaskForLogs.id" [taskTitle]="selectedTaskForLogs.title"
+                    (close)="onCloseLogs()">
+                </app-task-logs-modal>
+                }
 
                 } @empty {
                 <div class="empty-state">

@@ -187,6 +187,23 @@ $danger: #ef4444;
     display: flex;
     gap: 0.5rem;
 
+    .btn-logs {
+        background: transparent;
+        border: none;
+        color: #475569; // Slate gray
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: background 0.2s;
+
+        &:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+    }
+
     .btn-edit {
         background: transparent;
         border: none;

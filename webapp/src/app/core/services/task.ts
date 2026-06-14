@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Task, CreateTaskDto, UpdateTaskDto, DeleteResponse, ResponseTasks, ResponseTask } from '../models/task.model';
+import { ResponseTaskLogs } from '../models/task-log.model';
 
 @Injectable({
     providedIn: 'root'
@@ -52,5 +53,10 @@ export class TaskService {
                 this.tasksSubject.next(currentTasks);
             })
         );
+    }
+
+    // Busca o histórico de alterações de uma determinada tarefa
+    public getLogs(taskId: number): Observable<ResponseTaskLogs> {
+        return this.http.get<ResponseTaskLogs>(`${this.apiUrl}/${taskId}/log`);
     }
 }
