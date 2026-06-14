@@ -3,6 +3,7 @@ import sequelize from '../config/database.js';
 import bcrypt from 'bcrypt';
 import { UserAttributes, UserCreationAttributes } from '../types/user.types.js';
 
+// Modelo de dados representante da tabela de usuários no banco de dados MySQL
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     declare id: number;
     declare name: string;
@@ -27,7 +28,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
         delete values.id;
         delete values.password;
 
-        // Converte os objetos Date para String ISO de forma limpa
+        // Converte os objetos Date para String ISO
         if (values.createdAt) values.createdAt = values.createdAt.toISOString();
         if (values.updatedAt) values.updatedAt = values.updatedAt.toISOString();
         if (values.deletedAt) values.deletedAt = values.deletedAt.toISOString();
@@ -36,6 +37,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
     }
 }
 
+// Inicialização da estrutura e mapeamento de colunas da tabela MySQL
 User.init(
     {
         id: {

@@ -2,9 +2,9 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database.js';
 import UserModel from './user.model.js';
 import { TaskAttributes, TaskCreationAttributes } from '../types/task.types.js';
-import { TaskHookOptions } from '../types/task-log.types.js';
 import { TaskLog } from '../schemas/task-log.schema.js';
 
+// Modelo de dados representante da tabela de tarefas no banco de dados MySQL
 export class TaskModel extends Model<TaskAttributes, TaskCreationAttributes> implements TaskAttributes {
     declare id: number;
     declare title: string;
@@ -16,7 +16,7 @@ export class TaskModel extends Model<TaskAttributes, TaskCreationAttributes> imp
     declare readonly updatedAt: Date;
     declare readonly deletedAt: Date | null;
 
-    // Sobrescrever o toJSON nativo
+    // Sobrescreve o toJSON nativo
     public toJSON(): any {
         // Pega os valores puros do banco
         const values: Record<string, any> = { ...this.get() };
@@ -33,6 +33,7 @@ export class TaskModel extends Model<TaskAttributes, TaskCreationAttributes> imp
     }
 }
 
+// Inicialização da estrutura e mapeamento de colunas da tabela MySQL
 TaskModel.init(
     {
         id: {
@@ -64,22 +65,24 @@ TaskModel.init(
     },
     {
         sequelize,
-        tableName: 'tasks',
-        timestamps: true,
+        tableName: 'tasks', // Habilita de forma automatizada o createdAt e updatedAt
+        timestamps: true, // Habilita Soft Delete em vez de excluir a linha física
         paranoid: true,
         hooks: {
+            // Cria o log de criação da tarefa no NoSQL
             afterCreate: async (task, options) => {
                 const actorId = (options as any).userId || (options as any).context?.userId || task.getDataValue('userId');
 
-                // Chamada direta do Mongoose para salvar no MongoDB
+                // Chamada para salvar
                 await TaskLog.create({
                     taskId: task.id,
                     userId: actorId,
                     action: 'CREATE',
-                    changes: { title: task.title, description: task.description } // Objeto direto!
+                    changes: { title: task.title, description: task.description }
                 });
             },
 
+            // Mapeia quais colunas sofreram alteração, monta o histórico e salva no banco do MongoDB
             afterUpdate: async (task, options) => {
                 const actorId = (options as any).userId || (options as any).context?.userId || task.getDataValue('userId');
 
@@ -89,8 +92,8 @@ TaskModel.init(
 
                     changedFields.forEach((field) => {
                         changesObj[field] = {
-                            old: task.previous(field as any),
-                            new: task.get(field as any),
+                            old: task.previous(field as any), // Estado anterior do dado modificado da tarefa
+                            new: task.get(field as any), // Estado atual do dado modificado da tarefa 
                         };
                     });
 
@@ -103,6 +106,7 @@ TaskModel.init(
                 }
             },
 
+            // Registra a ação de remoção da atividade no MongoDB
             beforeDestroy: async (task, options) => {
                 const actorId = (options as any).userId || (options as any).context?.userId || task.getDataValue('userId');
 
@@ -117,12 +121,15 @@ TaskModel.init(
     }
 );
 
-// Configuração do Relacionamento
+/* Configuração do Relacionamento */
+
+// Relacionamento 1:N - Um Usuário possui várias Tarefas
 UserModel.hasMany(TaskModel, {
     foreignKey: 'userId',
     as: 'tasks'
 });
 
+// Relacionamento N:1 - Uma Tarefa pertence a um único Usuário
 TaskModel.belongsTo(UserModel, {
     foreignKey: {
         name: 'userId',
