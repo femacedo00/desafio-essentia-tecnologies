@@ -1,1 +1,123 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'sass:color';
+
+// Variáveis de Design do Projeto
+$primary-color: #4f46e5; // Azul/Indigo moderno
+$primary-hover: #4338ca;
+$bg-global: #f3f4f6; // Cinza claro de fundo
+$bg-card: #ffffff; // Branco para o formulário
+$text-main: #1f2937; // Grafite escuro para leitura
+$text-muted: #6b7280; // Cinza para placeholders/labels
+$border-color: #d1d5db;
+$error-color: #ef4444; // Vermelho de alerta
+$success-color: #10b981; // Verde de sucesso
+
+// Reset Global
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: $bg-global;
+    color: $text-main;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+// Container Centralizado (Flexbox puro para alinhar na tela)
+.login-container,
+.auth-container {
+    background: $bg-card;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 400px;
+    margin: 20px;
+
+    h2 {
+        margin-bottom: 1.5rem;
+        font-size: 1.75rem;
+        font-weight: 700;
+        text-align: center;
+        color: $text-main;
+    }
+
+    p {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.9rem;
+        color: $text-muted;
+
+        a {
+            color: $primary-color;
+            text-decoration: none;
+            font-weight: 600;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+// Inputs e Labels
+.form-group {
+    margin-bottom: 1.25rem;
+
+    label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $text-main;
+    }
+
+    input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &:focus {
+            border-color: $primary-color;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        &::placeholder {
+            color: color.adjust($text-muted, $lightness: 10%);
+        }
+    }
+}
+
+// Botão com efeito de Disabled Automático
+button[type="submit"] {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 0.5rem;
+
+    &:hover:not(:disabled) {
+        background-color: $primary-hover;
+    }
+
+    &:disabled {
+        background-color: $border-color;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+}
