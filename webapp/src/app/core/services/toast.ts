@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { ToastMessage } from '../models/toast.model';
+import { ToastMessage, ToastTypetMessage } from '../models/toast.model';
 
 @Injectable({
     providedIn: 'root'
@@ -11,7 +11,7 @@ export class ToastService {
     public toastState$ = this.toastSubject.asObservable();
 
     // Dispara um pop-up na tela que desaparece após o tempo definido
-    show(message: string, type: 'success' | 'error' = 'success', duration: number = 3000): void {
+    show(message: string, type: ToastTypetMessage = 'success', duration: number = 3000): void {
         this.toastSubject.next({ message, type });
 
         // Fecha o toast automaticamente após o tempo definido
