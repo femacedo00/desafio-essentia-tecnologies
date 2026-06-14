@@ -65,3 +65,199 @@ Dentro do diretório ``api``, os seguintes comandos estão configurados para ger
 * ``npm run build``: Executa o compilador do TypeScript (``tsc``) local utilizando o ``npx`` por debaixo dos panos, transpilando o código TS da pasta para JavaScript puro dentro do diretório de distribuição.
 
 * ``npm start``: Inicializa o servidor em ambiente de produção utilizando o Node.js a partir do ponto de entrada principal do projeto.
+
+## Guia de Rotas da API
+
+Todas as requisições devem conter o cabeçalho `Content-Type: application/json`. As rotas de tarefas exigem autenticação via Token JWT.
+
+### Rotas de Autenticação (`/users`)
+
+Responsável pelo gerenciamento de acesso dos usuários no sistema.
+
+| Método | Endpoint | Descrição | Autenticação |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/users/register` | Cadastro de um novo usuário no sistema | Não |
+| `POST` | `/users/login` | Autenticação do usuário e geração do Token JWT | Não |
+
+#### 1. Cadastro de Usuário
+* **Endpoint:** `POST /users/register`
+* **Corpo da Requisição (Body JSON):**
+```json
+{
+  "name": "Felipe Oliveira",
+  "email": "felipe@exemplo.com",
+  "password": "senha_segura_aqui"
+}
+```
+* **Resposta de Sucesso (201 Created):**
+```json
+{
+  "status": "success",
+  "data": {
+      "name": "Felipe Oliveira",
+      "email": "felipe@exemplo.com",
+      "createdAt": "aaaa-mm-ddThh:mm:ss.000Z",
+      "updatedAt": "aaaa-mm-ddThh:mm:ss.000Z"
+    }
+}
+```
+
+#### 2. Login de Usuário
+* **Endpoint:** `POST /users/login`
+* **Corpo da Requisição (Body JSON):**
+```json
+{
+  "email": "felipe@exemplo.com",
+  "password": "senha_segura_aqui"
+}
+```
+* **Resposta de Sucesso (200 OK):**
+```json
+{
+    "status": "success",
+    "data": {
+      "user": {
+         "name": "Felipe Oliveira",
+         "email": "felipe@exemplo.com",
+         "createdAt": "aaaa-mm-ddThh:mm:ss.000Z",
+         "updatedAt": "aaaa-mm-ddThh:mm:ss.000Z",
+         "deletedAt": null
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    }
+}
+```
+**Nota de Teste:** Copie o token retornado nesta rota e adicione-o como um cabeçalho de autorização (Authorization: Bearer <seu_token>) para conseguir testar as rotas de tarefas abaixo.
+
+### Rotas de Tarefas (`/tasks`)
+
+**Importante:** Todas as rotas abaixo exigem o Bearer Token no cabeçalho da requisição e operam de forma isolada por usuário logado.
+
+| Método | Endpoint | Descrição | Comportamento de Log |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/tasks` | Cria uma nova tarefa vinculada ao usuário | **Grava** `CREATE` no MongoDB |
+| `GET` | `/tasks` | Lista apenas as tarefas do usuário logado | Apenas Leitura (MySQL) |
+| `PATCH` | `/tasks/:id` | Atualiza dinamicamente colunas de uma tarefa | Grava `UPDATE` no MongoDB |
+| `DELETE` | `/tasks/:id` | Remove uma tarefa específica do usuário | Grava `DELETE` no MongoDB |
+| `GET` | `/tasks/:id` |,Retorna o histórico de uma determinada | Busca direto do MongoDB |
+
+#### 1. Criar Tarefa
+* **Endpoint:** `POST /tasks`
+* **Corpo da Requisição (Body JSON):**
+```json
+{
+  "title": "Finalizar a documentação do README",
+  "description": "Adicionar as especificações de payload e rotas"
+}
+```
+* **Ação Interna:** Salva o registro estruturado no MySQL e dispara um Hook assíncrono salvando um documento de auditoria na coleção do MongoDB.
+* **Resposta de Sucesso (201 Created):**
+```json
+{
+  "status": "success",
+  "data": {
+      "task": {
+         "id": number,
+         "title": "Finalizar a documentação do README",
+         "description": "Adicionar as especificações de payload e rotas",
+         "completed": boolean,
+         "createdAt": "aaaa-mm-ddThh:mm:ss.000Z",
+         "updatedAt": "aaaa-mm-ddThh:mm:ss.000Z"
+      }
+   }
+}
+```
+
+#### 2. Listar Todas as Tarefas
+* **Endpoint:** `GET /tasks`
+* **Filtro Nativo:** Retorna estritamente as tarefas pertencentes ao ID do usuário decodificado no token.
+* **Resposta de Sucesso (200 OK):**
+```json
+{
+  "status": "success",
+  "data": {
+      "tasks":[
+         {
+            "id": number,
+            "title": "Finalizar a documentação do README",
+            "description": "Adicionar as especificações de payload e rotas",
+            "completed": false,
+            "createdAt": "aaaa-mm-ddThh:mm:ss.000Z",
+            "updatedAt": "aaaa-mm-ddThh:mm:ss.000Z"
+         }
+      ]
+   }
+}
+```
+
+#### 3. Atualização Parcial de Tarefa
+* **Endpoint:** `PATCH /tasks/:id`
+* **Corpo da Requisição (Body JSON):** Você pode enviar `apenas` a chave que deseja alterar (title, description, completed). O validador aceita modificações parciais sem resetar os outros campos no MySQL.
+```json
+{
+  "completed": true
+}
+```
+* **Resposta de Sucesso (200 OK):**
+```json
+{
+  "status": "success",
+  "data": {
+      "task": {
+         "id": number,
+         "title": "Finalizar a documentação do README",
+         "description": "Adicionar as especificações de payload e rotas",
+         "completed": true,
+         "createdAt": "aaaa-mm-ddThh:mm:ss.000Z",
+         "updatedAt": "aaaa-mm-ddThh:mm:ss.000Z",
+         "deletedAt": null
+      }
+   }
+}
+```
+* **Ação Interna:** Atualiza a coluna no MySQL e o Hook do Sequelize intercepta o estado anterior (old) e o novo estado (new), enviando o histórico de modificações detalhado para o MongoDB.
+
+#### 4. Exclusão de Tarefa
+* **Endpoint:** `DELETE /tasks/:id`
+* **Resposta de Sucesso (200 OK):**
+```json
+{
+  "status": "success",
+  "message": "Tarefa deletada com sucesso."
+}
+```
+* **Ação Interna:** Atualiza a coluna deletedAt no banco do MySQL (`soft delete`) e adiciona uma entrada do tipo DELETE contendo o último estado do objeto no MongoDB para fins de histórico. 
+
+#### 5. Consultar Histórico da Tarefa
+* **Endpoint:** `GET /tasks/:id/log`
+* **Resposta de Sucesso (200 OK):** Consome a coleção do MongoDB, ordenando do evento mais recente para o mais antigo.
+```json
+{
+  "status": "success",
+  "data": {
+    "history": [
+      {
+        "id": string,
+        "taskId": number,
+        "userId": number,
+        "action": "UPDATE",
+        "changes": {
+          "completed": { "old": false, "new": true }
+        },
+        "updatedAt": "aaaa-mm-ddThh:mm:ss.000Z"
+      },
+      {
+        "id": string,
+        "taskId": number,
+        "userId": number,
+        "action": "CREATE",
+        "changes": {
+            "title": "Finalizar a documentação do README",
+            "description": "Adicionar as especificações de payload e rotas"
+        },
+        "updatedAt": "aaaa-mm-ddThh:mm:ss.000Z"
+      }
+    ]
+  }
+}
+```
