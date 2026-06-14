@@ -10,7 +10,6 @@ export type RegisterCredentials = LoginCredentials & { name: string }
 // Define a estrutura de resposta esperada da API após uma autenticação
 export interface AuthResponse {
     status: string;
-    token: string;
     user: {
         id: number;
         name: string;
@@ -18,8 +17,9 @@ export interface AuthResponse {
         createdAt: string;
         updatedAt: string;
         deletedAt: string;
+        token: string;
     };
 }
 
 // Define a estrutura de resposta esperada da API após o registro do novo usuário
-export type RegisterResponse = Omit<AuthResponse, 'token'>
+export type RegisterResponse = Omit<AuthResponse, 'user.token'>

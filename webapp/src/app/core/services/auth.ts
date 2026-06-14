@@ -21,8 +21,8 @@ export class Auth {
         return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
             tap(response => {
                 // Se o login foi efetuado com sucesso, é salvo o token JWT para ser utiolizado nas requisições dentro da plataforma
-                if (response && response.token) {
-                    localStorage.setItem('token', response.token);
+                if (response && response.user.token) {
+                    localStorage.setItem('token', response.user.token);
                 }
             })
         );

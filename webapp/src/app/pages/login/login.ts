@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Auth } from '../../core/services/auth';
+import { ToastService } from '../../core/services/toast';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ import { Auth } from '../../core/services/auth';
 export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(Auth);
+  private toast = inject(ToastService);
   private router = inject(Router);
 
   // Define as validações do formulário
@@ -21,12 +23,6 @@ export class Login {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]]
   });
-
-  // Armazena e expõe mensagens textuais nos tratamentos de erros da API para que seja retornada ao usuário na view
-  public errorMessage: string = '';
-
-  // Armazena e expõe mensagens textuais nos tratamentos de sucessos da API para que seja retornada ao usuário na view
-  public successMessage: string = '';
 
   // Processa o envio dos dados imputados no formulário
   public onSubmit(): void {
@@ -36,11 +32,12 @@ export class Login {
     // Inicia a requisição HTTP
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        this.successMessage = 'Login efetuado com sucesso! Redirecionando...';
-        // this.router.navigate(['/tasks']); 
+        this.router.navigate(['/tasks']);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Erro ao realizar login. Tente novamente.';
+        // Dispara o pop-up
+        const msg = err.error?.message || 'Erro ao registrar usuário.';
+        this.toast.show(msg, 'error');
       }
     });
   }
