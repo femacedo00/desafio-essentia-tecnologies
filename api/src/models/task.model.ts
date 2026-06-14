@@ -15,6 +15,22 @@ export class TaskModel extends Model<TaskAttributes, TaskCreationAttributes> imp
     declare readonly createdAt: Date;
     declare readonly updatedAt: Date;
     declare readonly deletedAt: Date | null;
+
+    // Sobrescrever o toJSON nativo
+    public toJSON(): any {
+        // Pega os valores puros do banco
+        const values: Record<string, any> = { ...this.get() };
+
+        // Remove o que não deve ser retornado
+        delete values.userId;
+
+        // Converte os objetos Date para String ISO de forma limpa
+        if (values.createdAt) values.createdAt = values.createdAt.toISOString();
+        if (values.updatedAt) values.updatedAt = values.updatedAt.toISOString();
+        if (values.deletedAt) values.deletedAt = values.deletedAt.toISOString();
+
+        return values;
+    }
 }
 
 TaskModel.init(

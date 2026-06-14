@@ -24,4 +24,4 @@ export const UpdateTaskSchema = z.object({
     title,
     description,
     completed
-});
+}).partial();
