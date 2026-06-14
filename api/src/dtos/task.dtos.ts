@@ -14,7 +14,7 @@ export interface UpdateTaskDTO {
     data: Partial<CreateTaskDTO> & { completed?: boolean };
 }
 
-// Definção de dados necessário para a exclusão de uma tarefa
+// Definção de dados necessário para os ids de uma tarefa
 export type IdsTaskDTO = Omit<UpdateTaskDTO, "data">;
 
 // Definção de dados necessário para a resposta de uma tarefa
@@ -26,4 +26,20 @@ export interface ResponseTaskDTO {
     updatedAt: string;
     createdAt: string;
     deletedAt?: string;
+}
+
+// Definção de dados necessário para os ids de um histórico de tarefa
+export interface IdsLogTaskDTO {
+    taskId: ID;
+    userId: ID;
+}
+
+// Definção de dados necessário para a resposta de um histórico de uma tarefa
+export interface TaskLogResponseDTO {
+    id: string;
+    taskId: ID;
+    userId: ID;
+    action: 'CREATE' | 'UPDATE' | 'DELETE';
+    changes: Record<string, any>;
+    createdAt: string;
 }

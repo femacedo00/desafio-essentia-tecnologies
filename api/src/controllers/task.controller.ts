@@ -84,4 +84,20 @@ export class TaskController {
             next(error);
         }
     }
+
+    public async getLog(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = req.userId!;
+            const taskId = Number(req.params.id); // Pega o ID da tarefa vindo da URL
+
+            const log = await taskService.getLog({ taskId, userId });
+
+            res.status(httpStatus.OK).json({
+                status: 'success',
+                data: { log }
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

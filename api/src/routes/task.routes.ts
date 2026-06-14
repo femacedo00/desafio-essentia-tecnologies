@@ -14,10 +14,13 @@ taskRoutes.post('/', taskController.create);
 // GET /tasks/listen - Rota de listegem de todas as tarefas
 taskRoutes.get('/', taskController.getAll);
 
-// PATCH /tasks/{id} - Rota de atualização de uma tarefa específica
+// PATCH /tasks/:id - Rota de atualização de uma tarefa específica
 taskRoutes.patch('/:id', taskController.update);
 
-// DELETE /tasks/{id} - RRota de exclusão de uma tarefa específica
+// DELETE /tasks/:id - RRota de exclusão de uma tarefa específica
 taskRoutes.delete('/:id', taskController.delete);
+
+// GET /tasks/:id/log - Rota de histórico da tarefa vinda do MongoDB
+taskRoutes.get('/:id/log', taskController.getLog);
 
 export default taskRoutes;

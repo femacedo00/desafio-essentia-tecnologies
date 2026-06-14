@@ -1,5 +1,6 @@
-import { CreateTaskDTO, IdsTaskDTO, ID, UpdateTaskDTO, ResponseTaskDTO } from '../dtos/task.dtos.js';
+import { CreateTaskDTO, IdsTaskDTO, ID, UpdateTaskDTO, ResponseTaskDTO, TaskLogResponseDTO, IdsLogTaskDTO } from '../dtos/task.dtos.js';
 import { TaskModel } from '../models/task.model.js';
+import { TaskLog } from '../schemas/task-log.schema.js';
 
 export class TaskService {
     // Criar tarefa vinculada ao usuário logado
@@ -41,5 +42,23 @@ export class TaskService {
         const task = await this.getById(taskData);
         await task.destroy();
         return true;
+    }
+
+    // Busca o histórico de uma determinada tarefa
+    public async getLog(logData: IdsLogTaskDTO): Promise<TaskLogResponseDTO[]> {
+        // Busca os logs filtrando por taskId e userId
+        const logs = await TaskLog.find(logData)
+            .sort({ createdAt: -1 }) // Traz os logs mais recentes primeiro
+            .lean(); // retorna objetos JS puros
+
+        // Mapeia e formata os registros
+        return logs.map(log => ({
+            id: String(log._id),
+            taskId: log.taskId,
+            userId: log.userId,
+            action: log.action,
+            changes: log.changes,
+            createdAt: log.createdAt.toISOString()
+        }));
     }
 }
