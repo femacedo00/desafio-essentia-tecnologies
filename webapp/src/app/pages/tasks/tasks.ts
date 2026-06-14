@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { TaskService } from '../../core/services/task';
 import { Auth } from '../../core/services/auth';
 import { ToastService } from '../../core/services/toast';
-import { Task, CreateTaskDto } from '../../core/models/task.model';
+import { Task, CreateTaskDto, UpdateTaskDto } from '../../core/models/task.model';
 
 @Component({
   selector: 'app-tasks',
@@ -21,6 +21,7 @@ export class Tasks implements OnInit {
   private authService = inject(Auth);
   private toast = inject(ToastService);
   public taskService = inject(TaskService);
+  public editingTaskId: number | null = null;
 
   // Captura e validação novas tarefas
   public taskForm: FormGroup = this.fb.group({
@@ -32,7 +33,6 @@ export class Tasks implements OnInit {
     description: ['']
   });
 
-
   // Dispara a busca inicial das tarefas cadastradas na api
   public ngOnInit(): void {
     this.taskService.getAll().subscribe({
@@ -43,25 +43,60 @@ export class Tasks implements OnInit {
     });
   }
 
-  // Processa o envio do formulário para a criação de uma nova tarefa
-  public onCreateTask(): void {
+  // Processa o envio do formulário para a criação ou edição de uma nova tarefa
+  public onSubmitForm(): void {
     // Não efetua o sunbmit enquanto o formulário não estiver de acordo com as validações
     if (this.taskForm.invalid) return;
 
-    const payload: CreateTaskDto = this.taskForm.value;
+    if (this.editingTaskId) {
+      // Modo edição
+      const payload: UpdateTaskDto = this.taskForm.value;
 
-    this.taskService.create(payload).subscribe({
-      next: () => {
-        // Em caso de sucesso, limpa os campos e dispara um pop-up de sucesso
-        this.toast.show('Tarefa criada com sucesso!', 'success');
-        this.taskForm.reset();
-      },
-      error: (err) => {
-        // Em caso de erro, mantém os campos e dispara um pop-up de erro
-        const msg = err.error?.message || 'Não foi possível salvar a tarefa.';
-        this.toast.show(msg, 'error');
-      }
+      this.taskService.update(this.editingTaskId, payload).subscribe({
+        next: () => {
+          // Em caso de sucesso, dispara um pop-up de sucesso
+          this.toast.show('Tarefa atualizada com sucesso!', 'success');
+
+          // Limpa o formulário e sai do modo de edição
+          this.onCancelEdit();
+        },
+        error: (err) => {
+          // Em caso de erro, dispara um pop-up de erro
+          this.toast.show(err.error?.message || 'Erro ao atualizar tarefa.', 'error');
+        }
+      });
+    } else {
+      // Modo Criação
+      const payload: CreateTaskDto = this.taskForm.value;
+
+      this.taskService.create(payload).subscribe({
+        next: () => {
+          // Em caso de sucesso, limpa os campos e dispara um pop-up de sucesso
+          this.toast.show('Tarefa criada com sucesso!', 'success');
+          this.taskForm.reset();
+        },
+        error: (err) => {
+          // Em caso de erro, mantém os campos e dispara um pop-up de erro
+          const msg = err.error?.message || 'Não foi possível salvar a tarefa.';
+          this.toast.show(msg, 'error');
+        }
+      });
+    }
+  }
+
+  // Insere os dados do card para no formulário
+  public onStartEdit(task: Task): void {
+    this.editingTaskId = task.id;
+    this.taskForm.patchValue({
+      title: task.title,
+      description: task.description || ''
     });
+  }
+
+  // cancela a edição caso o usuário desista
+  public onCancelEdit(): void {
+    this.editingTaskId = null;
+    this.taskForm.reset();
   }
 
   // Altera o estado de conclusão da tarefa (concluída ou pendente), invertendo o valor booleano atual

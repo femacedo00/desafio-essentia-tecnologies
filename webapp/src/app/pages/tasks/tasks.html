@@ -10,11 +10,9 @@
     </header>
 
     <div class="dashboard-content">
-
         <aside class="sidebar-form">
-            <h3>Nova Tarefa</h3>
-            <form [formGroup]="taskForm" (ngSubmit)="onCreateTask()">
-
+            <h3>{{ editingTaskId ? 'Editar Tarefa' : 'Nova Tarefa' }}</h3>
+            <form [formGroup]="taskForm" (ngSubmit)="onSubmitForm()">
                 <div class="form-group">
                     <label for="title">Título</label>
                     <input type="text" id="title" formControlName="title" placeholder="Ex: Estudar Angular 18">
@@ -27,8 +25,14 @@
                 </div>
 
                 <button type="submit" [disabled]="taskForm.invalid">
-                    Adicionar Tarefa
+                    {{ editingTaskId ? 'Salvar Alterações' : 'Adicionar Tarefa' }}
                 </button>
+
+                @if (editingTaskId) {
+                <button type="button" class="btn-cancel" (click)="onCancelEdit()">
+                    Cancelar
+                </button>
+                }
             </form>
         </aside>
 
@@ -51,6 +55,9 @@
                     </div>
 
                     <div class="task-actions">
+                        <button class="btn-edit" (click)="onStartEdit(task)" title="Editar tarefa">
+                            Editar
+                        </button>
                         <button class="btn-delete" (click)="onDeleteTask(task.id)" title="Excluir tarefa">
                             Excluir
                         </button>
